@@ -10,8 +10,8 @@ import (
 	"net"
 	"os"
 	"os/exec"
+	"regexp"
 	"strings"
-	"unicode"
 )
 
 type discoveryDevice struct {
@@ -25,6 +25,9 @@ type discoveryDevice struct {
 	SensorUpperWarn string `json:"{#SENSOR_UPPER_WARNING}"`
 	SensorStatus    string `json:"{#SENSOR_STATUS}"`
 }
+
+var isLetter = regexp.MustCompile(`^[a-zA-Z]+$`).MatchString
+var isLetterOrInt = regexp.MustCompile(`^[a-zA-Z0-9]+$`).MatchString
 
 func main() {
 	supportedSensors := []string{
@@ -50,8 +53,8 @@ func main() {
 		return
 	}
 
-	if !isLetter(os.Args[3]) {
-		fmt.Print("PASSWORD - not walid, accept only letters in password! \n")
+	if !isLetterOrInt(os.Args[3]) {
+		fmt.Print("PASSWORD - not walid, accept only letters and integers in password! \n")
 		return
 	}
 
@@ -159,15 +162,6 @@ func getBin(binFile string) (string, error) {
 		}
 	}
 	return "", fmt.Errorf("Not found: '%v'", binFile)
-}
-
-func isLetter(s string) bool {
-	for _, r := range s {
-		if !unicode.IsLetter(r) {
-			return false
-		}
-	}
-	return true
 }
 
 func stringInSlice(a string, list []string) bool {
